@@ -45,10 +45,8 @@
 
 int main (int argc, char **argv)
 {
-  int aflag = 0;
-  int bflag = 0;
   //char *ip_addres = NULL;
-  char *mode = DEFAULT_MODE;
+  const char *mode = DEFAULT_MODE;
 
   ///"http://192.168.0.100/act.cgi?c=set&t=main&1=1"
   
@@ -79,11 +77,6 @@ int main (int argc, char **argv)
       case 't':
         page += optarg;
         break;
-  
-      case 'b':
-        bflag = 1;
-        break;
-  
       case 'c':
         ip_addres = optarg;
         break;
@@ -113,8 +106,8 @@ int main (int argc, char **argv)
       uri += "&t=main&";
       uri += "1=1";
 
-  printf ("aflag = %d, bflag = %d, ip_addres = %c\n, mode = %s\n, uri = %c\n,",
-          aflag, bflag, ip_addres, mode, uri);
+    printf ("ip_addres = %s\n, mode = %s\n, uri = %s\n,",
+          ip_addres.c_str(), mode, uri.c_str());
 
   for (index = optind; index < argc; index++)
     printf ("Non-option argument %s\n", argv[index]);
