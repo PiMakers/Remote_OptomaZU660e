@@ -9,8 +9,13 @@
             "name": "(gdb) Launch",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/example",
-            "args": [],
+            "program": "${workspaceFolder}/bin/example",
+            "args": [
+                "-c",
+                "192.168.0.105",
+                "-m",
+                "set"
+            ],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],

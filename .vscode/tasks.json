@@ -16,7 +16,7 @@
             },
             "args": [
                 "-c",
-                "`curl-config --cc` -o example src/main.cpp `curl-config --cflags --libs`"
+                "g++ -o bin/example src/main.cpp -I/usr/include `curl-config --libs`"
             ]
         },
         {

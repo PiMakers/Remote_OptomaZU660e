@@ -23,11 +23,102 @@
  * simple HTTP POST using the easy interface
  * </DESC>
  */
-#include <stdio.h>
+
+//#include <ctype.h>
+#include <stdio.h> // strncmp()
+#include <string.h>
+//#include <iostream>
+
+#include <getopt.h> 
+#include <string>
+#include <stdlib.h>
+
 #include <curl/curl.h>
 
-int main(void)
+#define DEFAULT_MANUFACTURER "Optoma"
+#define DEFAULT_MODELLNAME "ZU660e"
+#define DEFAULT_PROTOCOL "http://"
+#define DEFAULT_IP "192.168.0.255"
+#define DEFAULT_MODE "set"
+
+#define BASE_PAGE "/act.cgi?"
+
+int main (int argc, char **argv)
 {
+  int aflag = 0;
+  int bflag = 0;
+  //char *ip_addres = NULL;
+  char *mode = DEFAULT_MODE;
+
+  ///"http://192.168.0.100/act.cgi?c=set&t=main&1=1"
+  
+  /**********************************
+  * page main (t=main):
+  * 
+  * 1: powerOn/Off (1/0)
+  * 2:  ...
+  * .
+  * .
+  * .
+  * 13: ...
+  **********************************/
+  std::string protocol = DEFAULT_PROTOCOL;
+  std::string ip_addres = DEFAULT_IP;
+  std::string base_page = BASE_PAGE;
+  std::string command = "c=";             /// set,get,...more?
+  std::string page = "t=";                /// 
+  std::string uri;                      /// = protocol + ip_addres + base_page;
+
+  int index;
+  int c;
+
+  opterr = 0;
+
+  while ((c = getopt (argc, argv, "t:bc:m:")) != -1)
+    switch (c) {
+      case 't':
+        page += optarg;
+        break;
+  
+      case 'b':
+        bflag = 1;
+        break;
+  
+      case 'c':
+        ip_addres = optarg;
+        break;
+      case 'm':
+        if ( strcmp(optarg, "get") )
+          mode = optarg;
+        else
+          fprintf (stderr, "optarg = %s \n", optarg);
+          mode = optarg;
+        break;        
+      case '?':
+        if (optopt == 'c')
+          fprintf (stderr, "Option -%c requires an argument.\n", optopt);
+        else if (isprint (optopt))
+          fprintf (stderr, "Unknown option `-%c'.\n", optopt);
+        else
+          fprintf (stderr,
+                   "Unknown option character `\\x%x'.\n",
+                   optopt);
+        return 1;
+      default:
+        abort ();
+      }
+      uri += ip_addres;
+      uri += "/act.cgi?c=";
+      uri += mode;
+      uri += "&t=main&";
+      uri += "1=1";
+
+  printf ("aflag = %d, bflag = %d, ip_addres = %c\n, mode = %s\n, uri = %c\n,",
+          aflag, bflag, ip_addres, mode, uri);
+
+  for (index = optind; index < argc; index++)
+    printf ("Non-option argument %s\n", argv[index]);
+  
   CURL *curl;
   CURLcode res;
 
@@ -39,16 +130,12 @@ int main(void)
   struct curl_slist *list = NULL;
 
   if(curl) {
-    /* First set the URL that is about to receive our POST. This URL can
-       just as well be a https:// URL if that is what should receive the
-       data. */
-//    curl_easy_setopt(curl, CURLOPT_URL, "http://postit.example.com/moo.cgi");
-    curl_easy_setopt(curl, CURLOPT_URL, "http://192.168.0.100/act.cgi?c=set&t=main&1=1");
-    //c=set&t=main&1=1
+//    curl_easy_setopt(curl, CURLOPT_URL, "http://192.168.0.100/act.cgi?c=set&t=main&1=1");
+    curl_easy_setopt(curl, CURLOPT_URL, uri.c_str());
     curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
     curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
     
-    
+    // Headers maybe not needed ???    
     list = curl_slist_append(list, "Accept: application/json, text/javascript, */*; q=0.01");
     list = curl_slist_append(list, "X-Requested-With: XMLHttpRequest");
     
@@ -66,7 +153,6 @@ int main(void)
 
 
     /* always cleanup */
-
     curl_easy_cleanup(curl);
   }
   curl_global_cleanup();
