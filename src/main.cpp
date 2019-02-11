@@ -38,7 +38,7 @@
 #define DEFAULT_MANUFACTURER "Optoma"
 #define DEFAULT_MODELLNAME "ZU660e"
 #define DEFAULT_PROTOCOL "http://"
-#define DEFAULT_IP "192.168.0.255"
+#define DEFAULT_IP "192.168.0.101"
 #define DEFAULT_MODE "set"
 
 #define BASE_PAGE "/act.cgi?"
